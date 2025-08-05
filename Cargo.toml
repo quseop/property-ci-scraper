@@ -9,6 +9,6 @@ shuttle-actix-web = "0.56.0"
 shuttle-runtime = "0.56.0"
 serde = "1.0.148"
 shuttle-shared-db = { version = "0.56.0", features = ["postgres", "sqlx"] }
-sqlx = "0.8.2"
+sqlx = { version = "0.8.2", features = ["macros"] }
 tokio = "1.26.0"
 chrono = "0.4.41"
