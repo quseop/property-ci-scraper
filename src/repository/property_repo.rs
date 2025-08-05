@@ -1,6 +1,6 @@
 use actix_web::web::Json;
 use sqlx::PgPool;
-use crate::models::property::Property;
+use crate::models::property::{Property, PropertyNew};
 
 #[derive(Clone)]
 pub struct PropertyRepo {
@@ -23,12 +23,35 @@ impl PropertyRepo {
     }
 
     /// Create Property
-    pub async fn create_property(&self, property: Json<Property>) -> Result<Property, sqlx::Error> {
-        todo!()
+    pub async fn create_property(&self, property: Json<PropertyNew>) -> Result<Property, sqlx::Error> {
+        sqlx::query_as("INSERT INTO properties(
+            title, price, address, province, city, suburb,
+            property_type, bedrooms, bathrooms, garage_spaces,
+            land_size, floor_size, source_url,
+            latitude, longitude)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+        RETURNING * ")
+            .bind(&property.title)
+            .bind(&property.price)
+            .bind(&property.address)
+            .bind(&property.province)
+            .bind(&property.city)
+            .bind(&property.suburb)
+            .bind(&property.property_type)
+            .bind(&property.bedrooms)
+            .bind(&property.bathrooms)
+            .bind(&property.garage_spaces)
+            .bind(&property.land_size)
+            .bind(&property.floor_size)
+            .bind(&property.source_url)
+            .bind(&property.latitude)
+            .bind(&property.longitude)
+            .fetch_one(&self.pool)
+            .await
     }
 
     /// Update Property By ID
-    pub async fn update_property_by_id(&self, id: &str, property: Json<Property>) -> Result<Property, sqlx::Error> {
+    pub async fn update_property_by_id(&self, id: &str, property: Json<PropertyNew>) -> Result<Property, sqlx::Error> {
         todo!()
     }
 

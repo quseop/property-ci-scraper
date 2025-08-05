@@ -1,6 +1,6 @@
-use chrono::Utc;
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
+
 
 #[derive(Deserialize)]
 pub struct PropertyNew {
@@ -16,15 +16,14 @@ pub struct PropertyNew {
     pub garage_spaces: Option<i32>,
     pub land_size: Option<f64>, // in square meters
     pub floor_size: Option<f64>, // in square meters
-    pub scraped_at: chrono::DateTime<Utc>,
     pub source_url: String,
     pub latitude: Option<f64>,
     pub longitude: Option<f64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+#[derive(Serialize, Deserialize, FromRow)]
 pub struct Property {
-    pub id: String,
+    pub id: i64,
     pub title: String,
     pub price: Option<i64>,
     pub address: String,
@@ -37,7 +36,6 @@ pub struct Property {
     pub garage_spaces: Option<i32>,
     pub land_size: Option<f64>, // in square meters
     pub floor_size: Option<f64>, // in square meters
-    pub scraped_at: chrono::DateTime<Utc>,
     pub source_url: String,
     pub latitude: Option<f64>,
     pub longitude: Option<f64>,
@@ -45,7 +43,7 @@ pub struct Property {
 
 impl Property {
     pub fn new(
-        id: String,
+        id: i64,
         title: String,
         price: Option<i64>,
         address: String,
@@ -76,7 +74,6 @@ impl Property {
             garage_spaces,
             land_size,
             floor_size,
-            scraped_at: Utc::now(),
             source_url,
             latitude,
             longitude,

@@ -3,42 +3,15 @@ mod models;
 mod controller;
 
 use actix_web::{
-    error, get,
-    middleware::Logger,
-    post,
+    get, middleware::Logger, post,
     web::{self, Json, ServiceConfig},
     Result,
 };
-use serde::{Deserialize, Serialize};
+
 use shuttle_actix_web::ShuttleActixWeb;
-use sqlx::{FromRow, PgPool};
-
-#[get("/{id}")]
-async fn retrieve(path: web::Path<i32>, state: web::Data<AppState>) -> Result<Json<Todo>> {
-    let todo = sqlx::query_as("SELECT * FROM todos WHERE id = $1")
-        .bind(*path)
-        .fetch_one(&state.pool)
-        .await
-        .map_err(|e| error::ErrorBadRequest(e.to_string()))?;
-
-    Ok(Json(todo))
-}
-
-#[post("")]
-async fn add(todo: web::Json<TodoNew>, state: web::Data<AppState>) -> Result<Json<Todo>> {
-    let todo = sqlx::query_as("INSERT INTO todos(note) VALUES ($1) RETURNING id, note")
-        .bind(&todo.note)
-        .fetch_one(&state.pool)
-        .await
-        .map_err(|e| error::ErrorBadRequest(e.to_string()))?;
-
-    Ok(Json(todo))
-}
-
-#[derive(Clone)]
-struct AppState {
-    pool: PgPool,
-}
+use sqlx::{ PgPool};
+use crate::controller::controller::{post_property, AppState};
+use crate::repository::property_repo::PropertyRepo;
 
 #[shuttle_runtime::main]
 async fn main(
@@ -49,28 +22,17 @@ async fn main(
         .await
         .expect("Failed to run migrations");
 
-    let state = web::Data::new(AppState { pool });
+
+    let state = web::Data::new(AppState { repository: PropertyRepo::new(pool) });
 
     let config = move |cfg: &mut ServiceConfig| {
         cfg.service(
-            web::scope("/todos")
+            web::scope("/properties")
                 .wrap(Logger::default())
-                .service(retrieve)
-                .service(add)
+                .service(post_property)
                 .app_data(state),
         );
     };
 
     Ok(config.into())
-}
-
-#[derive(Deserialize)]
-struct TodoNew {
-    pub note: String,
-}
-
-#[derive(Serialize, Deserialize, FromRow)]
-struct Todo {
-    pub id: i32,
-    pub note: String,
 }
