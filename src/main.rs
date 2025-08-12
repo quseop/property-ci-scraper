@@ -10,7 +10,7 @@ use actix_web::{
 
 use shuttle_actix_web::ShuttleActixWeb;
 use sqlx::{ PgPool};
-use crate::controller::controller::{post_property, AppState};
+use crate::controller::controller::{get_all_properties, get_property_by_id, post_property, put_property, AppState};
 use crate::repository::property_repo::PropertyRepo;
 
 #[shuttle_runtime::main]
@@ -29,7 +29,10 @@ async fn main(
         cfg.service(
             web::scope("/properties")
                 .wrap(Logger::default())
+                .service(get_all_properties)
+                .service(get_property_by_id)
                 .service(post_property)
+                .service(put_property)
                 .app_data(state),
         );
     };

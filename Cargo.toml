@@ -12,3 +12,5 @@ shuttle-shared-db = { version = "0.56.0", features = ["postgres", "sqlx"] }
 sqlx = { version = "0.8.2", features = ["macros"] }
 tokio = "1.26.0"
 chrono = "0.4.41"
+uuid = { version = "1.17.0", features = ["v4", "serde"] }
+log = "0.4.27"
