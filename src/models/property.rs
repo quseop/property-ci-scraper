@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 use sqlx::FromRow;
 use uuid::Uuid;
+use chrono::{DateTime, Utc};
 
 #[derive(Deserialize)]
 pub struct PropertyNew {
@@ -119,4 +120,89 @@ impl Property {
             longitude: property.longitude,
         }
     }
+}
+
+// Query parameters for filtering properties
+#[derive(Deserialize, Debug)]
+pub struct PropertyQuery {
+    pub city: Option<String>,
+    pub province: Option<String>,
+    pub min_price: Option<i64>,
+    pub max_price: Option<i64>,
+    pub property_type: Option<String>,
+    pub min_bedrooms: Option<i16>,
+    pub max_bedrooms: Option<i16>,
+    pub limit: Option<i64>,
+    pub offset: Option<i64>,
+}
+
+// Export format options for ML datasets
+#[derive(Deserialize, Debug)]
+pub struct ExportRequest {
+    pub format: ExportFormat,
+    pub query: Option<PropertyQuery>,
+    pub include_metadata: Option<bool>,
+}
+
+#[derive(Deserialize, Debug)]
+pub enum ExportFormat {
+    #[serde(rename = "csv")]
+    Csv,
+    #[serde(rename = "parquet")]
+    Parquet,
+    #[serde(rename = "json")]
+    Json,
+}
+
+// Scraping job configuration
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ScrapingJob {
+    pub id: String,
+    pub name: String,
+    pub target_url: String,
+    pub selectors: PropertySelectors,
+    pub schedule: String, // Cron expression
+    pub active: bool,
+    pub created_at: DateTime<Utc>,
+    pub last_run: Option<DateTime<Utc>>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct PropertySelectors {
+    pub title: String,
+    pub price: Option<String>,
+    pub address: String,
+    pub property_type: Option<String>,
+    pub bedrooms: Option<String>,
+    pub bathrooms: Option<String>,
+    pub land_size: Option<String>,
+    pub floor_size: Option<String>,
+}
+
+// Scraping result status
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ScrapingResult {
+    pub job_id: String,
+    pub status: ScrapingStatus,
+    pub properties_scraped: i32,
+    pub errors: Vec<String>,
+    pub started_at: DateTime<Utc>,
+    pub completed_at: Option<DateTime<Utc>>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub enum ScrapingStatus {
+    Running,
+    Completed,
+    Failed,
+    Cancelled,
+}
+
+// Property statistics for analytics
+#[derive(Serialize, Deserialize, Debug)]
+pub struct PropertyStats {
+    pub total_properties: i64,
+    pub properties_with_price: i64,
+    pub average_price: Option<i64>,
+    pub unique_cities: i64,
 }
