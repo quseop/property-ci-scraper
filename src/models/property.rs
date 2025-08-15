@@ -144,7 +144,7 @@ pub struct ExportRequest {
     pub include_metadata: Option<bool>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub enum ExportFormat {
     #[serde(rename = "csv")]
     Csv,

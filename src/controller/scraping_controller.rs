@@ -177,12 +177,13 @@ pub async fn export_properties(
     export_request: Json<ExportRequest>,
     state: web::Data<ScrapingAppState>
 ) -> Result<HttpResponse> {
+    let format = export_request.format.clone();
     let request = export_request.into_inner();
     info!("Exporting properties with format: {:?}", request.format);
     
     match state.export_service.export_data(request).await {
         Ok(data) => {
-            let content_type = match export_request.format {
+            let content_type = match format {
                 crate::models::property::ExportFormat::Csv => "text/csv",
                 crate::models::property::ExportFormat::Json => "application/json",
                 crate::models::property::ExportFormat::Parquet => "application/octet-stream",

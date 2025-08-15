@@ -131,7 +131,7 @@ impl PropertyRepo {
 
         query.push_str(" ORDER BY scraped_at DESC");
 
-        let mut sql_query = sqlx::query_as::<Property>(&query);
+        let mut sql_query = sqlx::query_as::<_, Property>(&query);
         for param in params {
             sql_query = sql_query.bind(param);
         }

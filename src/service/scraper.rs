@@ -109,7 +109,7 @@ impl PropertyScraper {
     fn find_property_containers(
         &self,
         document: &Html,
-        selectors: &PropertySelectors,
+        _selectors: &PropertySelectors,
     ) -> Result<Vec<String>> {
         // Try to find a common parent container for properties
         // This is a heuristic approach - in practice, you'd configure this per site
@@ -214,7 +214,7 @@ impl PropertyScraper {
         html.select(&selector)
             .next()
             .map(|element| element.text().collect::<String>().trim().to_string())
-            .ok_or_else(|| anyhow!("Element not found for selector: {}", selector))
+            .ok_or_else(|| anyhow!("Element not found for selector: {:?}", selector))
     }
 
     /// Extract price from text, handling various formats
