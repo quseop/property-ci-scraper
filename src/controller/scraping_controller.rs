@@ -4,7 +4,7 @@ use log::{info, error};
 use std::collections::HashMap;
 
 use crate::models::property::{
-    PropertyQuery, ExportRequest, ScrapingJob, PropertySelectors, 
+    PropertyQuery, ExportRequest, ScrapingJob, ScrapingJobRequest, PropertySelectors, 
     ScrapingResult, PropertyStats
 };
 use crate::service::scraper::PropertyScraper;
@@ -32,12 +32,15 @@ pub async fn get_scraping_jobs(state: web::Data<ScrapingAppState>) -> Result<Jso
 /// Create a new scraping job
 #[post("/scraping/jobs")]
 pub async fn create_scraping_job(
-    job: Json<ScrapingJob>, 
+    job_request: Json<ScrapingJobRequest>, 
     state: web::Data<ScrapingAppState>
 ) -> Result<HttpResponse> {
-    info!("Creating new scraping job: {}", job.name);
+    info!("Creating new scraping job: {}", job_request.name);
     
-    match state.scheduler.add_job(job.into_inner()).await {
+    // Convert request to full job with server-generated fields
+    let job = ScrapingJob::from_request(job_request.into_inner());
+    
+    match state.scheduler.add_job(job).await {
         Ok(job_id) => {
             info!("Successfully created scraping job with ID: {}", job_id);
             Ok(HttpResponse::Created().json(serde_json::json!({

@@ -33,8 +33,7 @@ use crate::repository::property_repo::PropertyRepo;
 async fn main(
     #[shuttle_shared_db::Postgres] pool: PgPool,
 ) -> ShuttleActixWeb<impl FnOnce(&mut ServiceConfig) + Send + Clone + 'static> {
-    // Initialize logging
-    env_logger::init();
+    // Logging is already initialized by shuttle runtime
     info!("Starting Property CI Scraper service");
     
     // Run database migrations

@@ -1,0 +1,17 @@
+{
+  "name": "Property24 Western Cape",
+  "target_url": "https://www.property24.com/to-rent/cape-town/western-cape/432",
+  "selectors": {
+    "container": ".p24_tileContainer",
+    "title": ".p24_description",
+    "price": ".p24_price",
+    "address": ".p24_location",
+    "property_type": ".p24_description",
+    "bedrooms": ".p24_description",
+    "bathrooms": ".p24_description",
+    "land_size": null,
+    "floor_size": null
+  },
+  "schedule": "0 0 2 * * *",
+  "active": true
+}
